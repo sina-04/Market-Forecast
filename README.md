@@ -15,12 +15,13 @@ Reproducible internship research for **فولاد**, forecasting the next observ
 6. Held-out MAE/MSE/RMSE/MAPE and persistence/Ridge/OHLCV comparisons.
 7. Generated English research report and results archive.
 
-Actual deliverables require live-data collection and training. Test fixtures never substitute for real
+Actual deliverables require verified real-data acquisition and training. Test fixtures never substitute for real
 TSETMC data or establish market performance. See [execution status](docs/implementation_status.md).
 
 ## Colab
 
-Run notebook cells in order. GPU is optional. Default persistence is `MyDrive/MarketForecast`.
+Run notebook cells in order. Select an available A100 GPU for the recorded experiment;
+the small model also supports other GPUs or CPU. Default persistence is `MyDrive/MarketForecast`.
 Six small LSTMs are selected on validation, then evaluated on held-out targets.
 Best checkpoints persist after each validation improvement; completed candidates can be reused.
 The source Git commit and environment are recorded. Use a new output root for a refreshed snapshot.
@@ -46,6 +47,18 @@ The helper limits retries, captures original responses and download metadata, an
 In this package, unadjusted `adjClose` is official closing price, `close` is last trade, and `yesterday` is
 previous official close. A successful CSV still needs validation/import before it becomes a frozen research
 snapshot. It is not automatically treated as a completed project dataset.
+
+For unchanged user-supplied adjusted and unadjusted exports:
+
+```powershell
+python -m marketforecast.cli import --root artifacts/foolad_20260926 --unadjusted exports/foolad_unadjusted_full_history.csv --adjusted exports/foolad_adjusted_full_history.csv --export-script export_foolad.py
+python -m marketforecast.cli prepare --root artifacts/foolad_20260926
+```
+
+The importer preserves both originals, validates date/activity agreement and Jalali conversion,
+and independently recalculates adjusted prices within the export's half-rial rounding tolerance.
+Original retrieval time, package version, and HTTP bodies remain explicitly unavailable when not
+recorded by the source exporter. Copy the complete frozen snapshot to Drive before training.
 
 ## Local setup
 
@@ -79,6 +92,9 @@ Prices are rials, volumes shares, Gregorian dates drive computation, and Jalali 
 Holidays/suspensions remain gaps. Invalid records are quarantined; large moves are only flagged.
 Other than identical duplicates and zero-trade sessions, exclusions stop preparation for review because
 discarding traded observations can break the corporate-action adjustment chain.
+For verified export imports, a candle with only a zero opening price may be quarantined while its
+valid official-close reference remains in the complete adjustment basis. No price is invented.
+Source session numbering excludes every target/window crossing the quarantined session.
 Official close may lie outside traded high/low due to market rules; candle checks apply to open/last trade.
 
 Backward adjustment accumulates next-session previous official close / current official close.
@@ -92,7 +108,8 @@ architecture, sequence length, Ridge alpha, or epoch. See [full data contract](d
 
 ## Outputs
 
-`ROOT/data/snapshot/`: search/history JSON, `raw.csv`, checksummed manifest.
+`ROOT/data/snapshot/`: original API responses or original user CSV exports, `raw.csv`, checksummed manifest;
+export imports also retain an independently verified complete adjustment basis.
 
 `ROOT/runs/<fingerprint>/`: cleaned/features CSVs, quarantine/audits, default and selected sequences,
 scalers, checkpoints, configuration/environment, feature order, metadata, models, predictions,

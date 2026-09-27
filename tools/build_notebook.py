@@ -72,7 +72,7 @@ SNAPSHOT_ZIP = ROOT / "foolad_snapshot_20260926.zip"
 if not (ROOT / "data/snapshot/manifest.json").exists() and SNAPSHOT_ZIP.exists():
     with zipfile.ZipFile(SNAPSHOT_ZIP) as archive:
         for name in archive.namelist():
-            if not name.startswith("data/snapshot/") or ".." in Path(name).parts:
+            if (name != "data/" and not name.startswith("data/snapshot/")) or ".." in Path(name).parts:
                 raise ValueError("Unexpected snapshot archive member")
         archive.extractall(ROOT)
 from marketforecast.data import collect

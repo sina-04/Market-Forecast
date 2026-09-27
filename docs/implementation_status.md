@@ -10,7 +10,7 @@ Synthetic fixtures check behavior only; real-data deliverables require a success
 - Installed and inspected `pytse-client` 0.19.1 and upstream source.
 - Bundled فولاد identity: company فولاد مبارکه اصفهان, index `46348559193224090`, ISIN `IRO1FOLD0001`.
 - Its legacy export at `old.tsetmc.com/tsev2/data/Export-txt.aspx` timed out over both HTTP and HTTPS,
-  locally and in Colab. No real historical CSV or successful research snapshot was produced.
+  locally and in Colab. Direct acquisition did not produce a research snapshot.
 - `tools/download_pytse.py` preserves original successful HTTP responses, metadata, and CSVs, with bounded
   retries. Use `requirements-pytse.txt` in an isolated acquisition environment because its older
   `jdatetime` dependency conflicts with the pinned training environment.
@@ -19,6 +19,16 @@ Synthetic fixtures check behavior only; real-data deliverables require a success
 - The current Colab runtime uses Python 3.13. Training requirements now select TensorFlow 2.20 there,
   while retaining TensorFlow 2.19.1 for Python 3.11/3.12.
 
-Next empirical prerequisite: a real, source-documented five-year فولاد history from a reachable network
-or an unchanged user-supplied TSETMC export. No synthetic performance is presented as a market result.
+## User exports and frozen snapshot — 2026-09-27
+
+- User supplied unchanged adjusted/unadjusted pytse full-history exports: 4,231 observations each,
+  2007-03-11 through 2026-09-26. Source exporter retrieval time/package version were not recorded.
+- Five-year snapshot: 2021-09-26 through 2026-09-26, 1,038 observations.
+- Independently reconstructed adjusted price fields agree with provided rounded prices within 0.5 rial.
+  Date coverage, volume/value/count agreement, and Jalali date conversion pass.
+- One invalid opening price (zero), 2025-07-29, quarantined. Its valid official-close adjustment reference
+  remains in the full basis; windows/targets crossing the excluded session are removed.
+- 1,037 cleaned candles; 1,004 feature rows after 33 warm-up exclusions.
+- 27 implementation tests pass. Real training/evaluation status is recorded after Colab completion.
+- Colab allocated NVIDIA A100-SXM4-80GB, with approximately 167 GB host RAM; Drive is mounted.
 
