@@ -1,0 +1,16 @@
+{
+  "full_history_rows": 4231,
+  "frozen_rows": 1038,
+  "adjusted_export_max_absolute_discrepancy_rial": {
+    "open": 0.49981230723506087,
+    "high": 0.4999317921481463,
+    "low": 0.49975172458055184,
+    "official_close": 0.49981230723506087,
+    "last_trade": 0.49970498054600654
+  },
+  "rounding_tolerance_rial": 0.500001,
+  "activity_columns_identical": true,
+  "jalali_dates_checked": true,
+  "identity_basis": "User export script explicitly downloads ticker فولاد; pytse bundled identifier",
+  "http_responses_available": false
+}

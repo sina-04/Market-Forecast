@@ -1,0 +1,33 @@
+{
+  "symbol": "فولاد",
+  "company_contains": "فولادمبارکه",
+  "years": 5,
+  "start_date": "2021-09-26",
+  "end_date": "2026-09-26",
+  "instrument_ids": [
+    "46348559193224090"
+  ],
+  "isin": "IRO1FOLD0001",
+  "company": "فولاد مبارکه اصفهان",
+  "retrieved_at_utc": "Not recorded by source exporter",
+  "imported_at_utc": "2026-09-27T04:12:33.197884+00:00",
+  "source": "TSETMC via user-supplied pytse-client CSV exports",
+  "adapter_version": "pytse-export-import/0.1.0",
+  "source_version": "Not recorded by source exporter",
+  "mapping_reference": "https://github.com/Glyphack/pytse-client",
+  "field_mapping": {
+    "adjClose": "official_close",
+    "close": "last_trade",
+    "yesterday": "previous_official_close",
+    "count": "trade_count"
+  },
+  "completion_policy": "Strictly before current Tehran date",
+  "checksums": {
+    "adjustment_basis.csv": "093bc323027c52863eb8f8b1fe8c7ec88f410e0307003bbfa598a29838e84ce6",
+    "export_validation.json": "02da7cd9cbe9a7c0c2c4db216de7e8061dde7f23acb8175966124b812d8b3edc",
+    "raw.csv": "bc3f1942d674818036226d213f0e6c313c6cedc1c23e12ad97b50b43bae51fdf",
+    "source_adjusted.csv": "123c35502e5b3189240c122427715407cd31ced913305a366fd4814534172d71",
+    "source_export_script.py": "8b9382033c9daf2d92843c1fb5bc3aaf488b13c8a2d3c31e8eca666df678237a",
+    "source_unadjusted.csv": "8976224283556c169af56af10ea6ced2db4a8faa0530943c746f909e1e925417"
+  }
+}

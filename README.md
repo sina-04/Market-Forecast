@@ -3,7 +3,14 @@
 Reproducible internship research for **فولاد**, forecasting the next observed traded session's
 **adjusted official closing price (قیمت پایانی)** from five years of daily TSETMC data.
 
-[Open in Colab](https://colab.research.google.com/github/sina-04/MarketForecast/blob/codex/tsetmc-colab/notebooks/marketforecast_colab.ipynb)
+[Open in Colab](https://colab.research.google.com/github/sina-04/MarketForecast/blob/main/notebooks/marketforecast_colab.ipynb)
+
+## Completed Foolad experiment
+
+The [published results](results/foolad_20260926/README.md) include the frozen snapshot, cleaned data,
+features, sequences, scalers, trained models, executed notebook, predictions, and English report.
+Training used an A100 with 80 GB GPU memory. Persistence won the held-out comparison; the selected
+LSTM did not outperform it. All five charts are available as 600-DPI PNG and vector PDF/SVG files.
 
 ## Priorities
 
@@ -118,7 +125,8 @@ metrics, loss/forecast/residual figures, and `report.md`.
 `ROOT/artifacts/marketforecast_<fingerprint>.zip`: portable data/results archive with checksums.
 `completion.json` appears only after evaluation and model reload verification succeed.
 
-Large datasets/models, credentials and notebook outputs are excluded from Git.
+Working datasets/models and notebook outputs are excluded from Git. The verified, frozen
+`results/foolad_20260926/` publication is explicitly included; credentials are never committed.
 Docker, more stocks, trading UI, and extensive searches are deferred.
 See the [original instructions](Financial_Market_LSTM_Project_Instructions_EN.md).
 

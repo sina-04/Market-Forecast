@@ -14,6 +14,30 @@ def metrics(actual, predicted):
             "samples": int(len(actual))}
 
 
+def save_figure(fig, output, name):
+    """Export print-quality PNG and scalable PDF/SVG from the original figure."""
+    from pathlib import Path
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    for extension in ("png", "pdf", "svg"):
+        fig.savefig(output / f"{name}.{extension}", dpi=600)
+
+
+def history_plot(output, frame):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    fig, ax = plt.subplots(figsize=(12, 4))
+    ax.plot(pd.to_datetime(frame["date"]), frame["adj_official_close"])
+    ax.set(xlabel="Observed session date", ylabel="Adjusted official closing price (rial)",
+           title="Foolad — adjusted official closing price")
+    fig.autofmt_xdate()
+    fig.tight_layout()
+    save_figure(fig, output, "adjusted_close_history")
+    plt.close(fig)
+
+
 def plots(output, predictions, histories):
     import matplotlib
     matplotlib.use("Agg")
@@ -27,7 +51,7 @@ def plots(output, predictions, histories):
         ax.set(xlabel="Epoch", ylabel="MSE", title=name)
         ax.legend()
         fig.tight_layout()
-        fig.savefig(output / f"loss_{name}.png", dpi=150)
+        save_figure(fig, output, f"loss_{name}")
         plt.close(fig)
     fig, ax = plt.subplots(figsize=(12, 5))
     for column in ["actual", "lstm", "persistence", "ridge", "ohlcv_lstm"]:
@@ -37,7 +61,7 @@ def plots(output, predictions, histories):
     ax.xaxis.set_major_locator(plt.MaxNLocator(8))
     ax.legend()
     fig.tight_layout()
-    fig.savefig(output / "test_forecasts.png", dpi=150)
+    save_figure(fig, output, "test_forecasts")
     plt.close(fig)
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     errors = predictions["lstm"] - predictions["actual"]
@@ -47,5 +71,5 @@ def plots(output, predictions, histories):
     axes[1].hist(errors, bins=30)
     axes[1].set(xlabel="Residual (rial)", ylabel="Count")
     fig.tight_layout()
-    fig.savefig(output / "residuals.png", dpi=150)
+    save_figure(fig, output, "residuals")
     plt.close(fig)

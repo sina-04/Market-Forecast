@@ -1,0 +1,90 @@
+{
+  "selected": {
+    "name": "lstm_60_64",
+    "length": 60,
+    "units": 64,
+    "MAE": 290.05533289843817,
+    "MSE": 105010.83356738841,
+    "RMSE": 324.0537510466256,
+    "MAPE": 10.416242628582479,
+    "samples": 132
+  },
+  "feature_order": [
+    "adj_open",
+    "adj_high",
+    "adj_low",
+    "adj_official_close",
+    "volume",
+    "return_1",
+    "close_lag_1",
+    "return_lag_1",
+    "close_lag_2",
+    "return_lag_2",
+    "close_lag_5",
+    "return_lag_5",
+    "sma_5",
+    "ema_5",
+    "volatility_5",
+    "rolling_max_5",
+    "rolling_min_5",
+    "price_to_sma_5",
+    "sma_10",
+    "ema_10",
+    "volatility_10",
+    "rolling_max_10",
+    "rolling_min_10",
+    "price_to_sma_10",
+    "sma_20",
+    "ema_20",
+    "volatility_20",
+    "rolling_max_20",
+    "rolling_min_20",
+    "price_to_sma_20",
+    "rsi_14",
+    "macd",
+    "macd_signal",
+    "macd_histogram",
+    "bollinger_upper",
+    "bollinger_lower",
+    "bollinger_position",
+    "atr_14",
+    "volume_change",
+    "relative_volume_20",
+    "range_to_close",
+    "return_times_volume",
+    "elapsed_days_feature",
+    "weekday_sin",
+    "weekday_cos",
+    "jalali_month_sin",
+    "jalali_month_cos",
+    "gregorian_month_end"
+  ],
+  "target": "next observed session adj_official_close",
+  "unit": "retrospectively adjusted rial",
+  "adjustment_basis_date": "2026-09-26",
+  "snapshot_checksums": {
+    "adjustment_basis.csv": "093bc323027c52863eb8f8b1fe8c7ec88f410e0307003bbfa598a29838e84ce6",
+    "export_validation.json": "02da7cd9cbe9a7c0c2c4db216de7e8061dde7f23acb8175966124b812d8b3edc",
+    "raw.csv": "bc3f1942d674818036226d213f0e6c313c6cedc1c23e12ad97b50b43bae51fdf",
+    "source_adjusted.csv": "123c35502e5b3189240c122427715407cd31ced913305a366fd4814534172d71",
+    "source_export_script.py": "8b9382033c9daf2d92843c1fb5bc3aaf488b13c8a2d3c31e8eca666df678237a",
+    "source_unadjusted.csv": "8976224283556c169af56af10ea6ced2db4a8faa0530943c746f909e1e925417"
+  },
+  "cutoffs": {
+    "train": {
+      "first_target": "2022-02-07",
+      "last_target": "2024-11-06",
+      "samples": 618
+    },
+    "validation": {
+      "first_target": "2024-11-09",
+      "last_target": "2025-06-08",
+      "samples": 132
+    },
+    "test": {
+      "first_target": "2025-06-09",
+      "last_target": "2026-09-26",
+      "samples": 134
+    }
+  }
+}

@@ -1,0 +1,2 @@
+date,open,high,low,official_close,last_trade,previous_official_close,volume,value,trade_count,instrument_id,source_row,reason
+2025-07-29,0.0,2969.0,2956.0,2956.0,2956.0,3047.0,103977646,307359980880,2841,46348559193224090,865,nonpositive_price;invalid_candle

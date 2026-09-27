@@ -1,0 +1,2 @@
+# Frozen research artifacts must retain exact bytes for SHA-256 verification.
+results/foolad_20260926/** -text whitespace=cr-at-eol

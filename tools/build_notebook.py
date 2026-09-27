@@ -12,7 +12,7 @@ def cell(kind, source):
 
 cells = [
 cell("markdown", """
-# MarketForecast — فولاد / TSETMC
+# MarketForecast — Foolad / TSETMC
 Forecast the next observed traded session's **adjusted official closing price**.
 This is retrospective research: backward adjustments use later corporate actions.
 Official close (`pClosing`) and last trade (`pDrCotVal`) are different fields.
@@ -24,7 +24,7 @@ cell("code", """
 from pathlib import Path
 import subprocess, sys
 REPO_URL = "https://github.com/sina-04/MarketForecast.git"
-REPO_REF = "codex/tsetmc-colab"
+REPO_REF = "main"
 REPO_DIR = Path("/content/MarketForecast")
 if not (REPO_DIR / ".git").exists():
     subprocess.run(["git", "clone", "--branch", REPO_REF, "--single-branch", REPO_URL, str(REPO_DIR)], check=True)
@@ -98,7 +98,10 @@ from marketforecast.sequences import prepare
 splits, _, _ = prepare(FRAME, FEATURES, CONFIG["default_sequence_length"], PLAN)
 for name, split in splits.items():
     print(name, split["X"].shape, split["dates"][0], split["dates"][-1])
-FRAME.plot(x="date", y="adj_official_close", figsize=(12, 4), title="Adjusted official close (rial)")
+from marketforecast.evaluation import history_plot
+history_plot(OUTPUT, FRAME)
+from IPython.display import Image
+display(Image(filename=str(OUTPUT / "adjusted_close_history.png"), width=1000))
 """),
 cell("markdown", """
 ## Train, select on validation, then evaluate the sealed test period
@@ -119,7 +122,7 @@ from marketforecast.workflow import verify_run
 print(verify_run(OUTPUT))
 from IPython.display import Image, Markdown, display
 for filename in ["loss_selected_lstm.png", "loss_ohlcv_lstm.png", "test_forecasts.png", "residuals.png"]:
-    display(Image(filename=str(OUTPUT / filename)))
+    display(Image(filename=str(OUTPUT / filename), width=1000))
 display(Markdown((OUTPUT / "report.md").read_text(encoding="utf-8")))
 """),
 cell("markdown", """

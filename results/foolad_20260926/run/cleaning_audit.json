@@ -1,0 +1,12 @@
+{
+  "raw_rows": 1038,
+  "clean_rows": 1037,
+  "quarantined_rows": 1,
+  "reason_counts": {
+    "nonpositive_price": 1,
+    "invalid_candle": 1
+  },
+  "adjustment_safe": true,
+  "adjustment_basis": "Verified complete export chain, including quarantined missing-open session",
+  "missing_open_sessions_excluded": 1
+}
