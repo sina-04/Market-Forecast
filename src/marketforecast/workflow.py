@@ -15,10 +15,13 @@ from .sequences import make_plan, prepare
 def prepare_run(root, config):
     snapshot = Path(root) / "data" / "snapshot"
     manifest = validate_snapshot(snapshot)
-    if manifest["symbol"] != config["symbol"] or manifest["years"] != config["years"]:
+    if (manifest["symbol"] != config["symbol"] or manifest["years"] != config["years"]
+            or manifest["company_contains"] != config["company_contains"]):
         raise ValueError("Config disagrees with frozen snapshot; use another root for a new experiment")
+    source_hashes = {p.name: hashlib.sha256(p.read_text(encoding="utf-8").encode()).hexdigest()
+                     for p in Path(__file__).parent.glob("*.py")}
     fingerprint = hashlib.sha256(json.dumps({"snapshot": manifest["checksums"], "config": config,
-                                            "pipeline": "0.1.0"}, sort_keys=True).encode()).hexdigest()[:12]
+                                            "source_hashes": source_hashes}, sort_keys=True).encode()).hexdigest()[:12]
     output = Path(root) / "runs" / fingerprint
     output.mkdir(parents=True, exist_ok=True)
     raw = pd.read_csv(snapshot / "raw.csv", dtype={"instrument_id": str})
@@ -39,6 +42,9 @@ def prepare_run(root, config):
     write_json(output / "config.json", config)
     write_json(output / "snapshot_manifest.json", manifest)
     write_json(output / "feature_order.json", names)
+    write_json(output / "source_hashes.json", source_hashes)
+    if (Path(root) / "source_commit.json").exists():
+        shutil.copy2(Path(root) / "source_commit.json", output / "source_commit.json")
     plan = make_plan(frame, config)
     import joblib
     import numpy as np

@@ -73,7 +73,8 @@ def train(output, frame, names, plan, config, manifest, audits):
         pass
     write_json(output / "environment.json", {
         "python": platform.python_version(), "platform": platform.platform(),
-        "packages": {p: importlib.metadata.version(p) for p in ["tensorflow", "numpy", "pandas", "scikit-learn", "requests", "jdatetime", "h5py", "joblib"]},
+        "packages": {distribution.metadata["Name"]: distribution.version
+                     for distribution in importlib.metadata.distributions() if distribution.metadata["Name"]},
         "devices": [d.name for d in tf.config.list_physical_devices()], "seed": config["seed"],
     })
     candidates = []

@@ -37,7 +37,7 @@ OHLCV ablation uses the selected length/width with separate scalers. No improvem
 
 HTTPS validation stays enabled; requests have bounded timeouts/attempts. Malformed schemas fail.
 Today is excluded. Snapshot manifests are atomic and contain SHA-256 checksums.
-Run fingerprints include configuration, data hashes, and pipeline version. Seeds/environment/devices
+Run fingerprints include configuration, data hashes, and Python source hashes. Seeds/environment/devices
 are recorded; floating-point behavior may vary across hardware.
 Feature-causality tests hold the backward adjustment basis fixed. Point-in-time deployment would need
 dated corporate-action data and a different evaluation design. No trading strategy or profit claim is made.

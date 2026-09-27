@@ -47,7 +47,7 @@ def test_alignment_common_dates_and_train_scalers(feature_frame, config):
         train = splits["train"]
         assert train["dates"][-1] < splits["validation"]["dates"][0] < splits["test"]["dates"][0]
         t = train["target_positions"][0]
-        np.testing.assert_allclose(train["X"][0], xs.transform(frame.iloc[t-length:t][names]), rtol=1e-5, atol=1e-5)
+        np.testing.assert_allclose(train["X"][0], xs.transform(frame.iloc[t-length:t][names].to_numpy()), rtol=1e-5, atol=1e-5)
         assert train["actual"][0] == frame.iloc[t]["adj_official_close"]
         assert train["persistence"][0] == frame.iloc[t-1]["adj_official_close"]
         np.testing.assert_allclose(ys.mean_, train["actual"].mean())

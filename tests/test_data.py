@@ -33,6 +33,7 @@ def test_exact_company_identity_and_rights_exclusion():
 
 def test_cleaning_dates_duplicates_and_gaps(raw_frame):
     raw_frame.loc[1, "date"] = "2022-01-04"
+    raw_frame["volume"] = raw_frame["volume"].astype(object)
     raw_frame.loc[0, "volume"] = "10,000"
     raw = pd.concat([raw_frame.iloc[::-1], raw_frame.iloc[[0]]], ignore_index=True)
     cleaned, rejected, audit = clean(raw)
