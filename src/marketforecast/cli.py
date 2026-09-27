@@ -8,7 +8,10 @@ from .workflow import prepare_run, run, verify_run
 
 def main():
     parser = argparse.ArgumentParser(description="TSETMC retrospective research pipeline")
-    parser.add_argument("stage", choices=["collect", "prepare", "train", "all", "verify"])
+    parser.add_argument("stage", choices=["import", "collect", "prepare", "train", "all", "verify"])
+    parser.add_argument("--unadjusted", type=Path)
+    parser.add_argument("--adjusted", type=Path)
+    parser.add_argument("--export-script", type=Path)
     parser.add_argument("--root", type=Path, default=Path("artifacts/local"))
     parser.add_argument("--config", type=Path, default=Path("configs/default.json"))
     parser.add_argument("--run", type=Path, help="Saved run directory for verify")
@@ -20,7 +23,12 @@ def main():
             print(verify_run(args.run))
             return
         config = read_json(args.config)
-        if args.stage == "collect":
+        if args.stage == "import":
+            if not args.unadjusted or not args.adjusted:
+                parser.error("import requires --unadjusted and --adjusted")
+            from .import_export import import_exports
+            print(import_exports(args.root, config, args.unadjusted, args.adjusted, args.export_script)[0])
+        elif args.stage == "collect":
             print(collect(args.root, config)[0])
         elif args.stage == "prepare":
             print(prepare_run(args.root, config)[0])

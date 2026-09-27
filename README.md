@@ -29,9 +29,28 @@ If Colab cannot reach TSETMC, collect locally and copy the **entire** `data/snap
 the same path under the Drive output root. Cached data must pass integrity checks.
 The first capture freezes five years ending before today's Tehran date.
 
+### Alternative acquisition with pytse-client
+
+The legacy TSETMC CSV export can also be attempted using [pytse-client](https://github.com/Glyphack/pytse-client).
+Keep its older dependencies in a separate environment:
+
+```powershell
+py -3.12 -m venv .venv-pytse
+./.venv-pytse/Scripts/python.exe -m pip install -r requirements-pytse.txt
+./.venv-pytse/Scripts/python.exe tools/download_pytse.py
+# Optional HTTPS attempt against the same legacy export route:
+./.venv-pytse/Scripts/python.exe tools/download_pytse.py --https --output artifacts/pytse-download-https
+```
+
+The helper limits retries, captures original responses and download metadata, and exports unadjusted history.
+In this package, unadjusted `adjClose` is official closing price, `close` is last trade, and `yesterday` is
+previous official close. A successful CSV still needs validation/import before it becomes a frozen research
+snapshot. It is not automatically treated as a completed project dataset.
+
 ## Local setup
 
-Use Python 3.11/3.12 for the pinned training environment. Python 3.14 is unsupported.
+Use Python 3.11–3.13 for training. Python 3.14 is unsupported. Local commands below use Python 3.12;
+Colab's Python 3.13 selects TensorFlow 2.20 through the requirements file.
 
 ```powershell
 py -3.12 -m venv .venv

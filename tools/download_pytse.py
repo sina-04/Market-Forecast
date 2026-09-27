@@ -28,6 +28,10 @@ def main():
     identity = symbols_data.symbols_information().get(args.symbol)
     if not identity:
         raise ValueError(f"No exact bundled symbol match: {args.symbol}")
+    if args.symbol == "فولاد":
+        company = "".join(identity["name"].replace("ك", "ک").replace("ي", "ی").split())
+        if "فولادمبارکه" not in company or identity["code"] != "IRO1FOLD0001":
+            raise ValueError("Bundled فولاد company/ISIN identity did not match")
     metadata = {
         "symbol": args.symbol, "identity": identity,
         "pytse_client_version": importlib.metadata.version("pytse-client"),

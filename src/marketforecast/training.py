@@ -48,7 +48,7 @@ def fit_candidate(tf, directory, splits, length, units, config):
         options.threading.private_threadpool_size = 1
         return data.with_options(options).prefetch(1)
     history = model.fit(dataset(splits["train"]), validation_data=dataset(splits["validation"]),
-                        epochs=config["epochs"], callbacks=callbacks, verbose=2).history
+                        epochs=config["epochs"], callbacks=callbacks, shuffle=False, verbose=2).history
     if not history["val_loss"] or not np.isfinite(history["val_loss"]).all():
         raise RuntimeError("Nonfinite training/validation losses; candidate is not usable")
     write_json(history_path, history)
@@ -156,7 +156,7 @@ def write_report(output, manifest, audits, config, selected, results):
 
 ## Objective and data
 Predict فولاد's next observed traded session's adjusted official closing price after the current session.
-Source: TSETMC HTTPS API. Period: {manifest['start_date']} to {manifest['end_date']}.
+Source: {manifest['source']}. Period: {manifest['start_date']} to {manifest['end_date']}.
 Retrieved: {manifest['retrieved_at_utc']}. Instrument IDs: {', '.join(manifest['instrument_ids'])}.
 Prices are rials; volume is shares. The raw source, normalized raw CSV, and SHA-256 checksums are frozen.
 Official closing price is pClosing (FinPy Final); pDrCotVal (FinPy Close) is last trade.
@@ -164,6 +164,10 @@ Official closing price is pClosing (FinPy Final); pDrCotVal (FinPy Close) is las
 ## Cleaning and corporate actions
 {audits['cleaning']['raw_rows']} raw rows; {audits['cleaning']['clean_rows']} valid rows;
 {audits['cleaning']['quarantined_rows']} quarantined rows. Reasons: {audits['cleaning']['reason_counts']}.
+Adjustment basis: {audits['cleaning'].get('adjustment_basis', 'Complete valid cleaned history')}.
+Quarantined candles are excluded; all input windows and their targets must be consecutive source sessions.
+User CSV imports preserve original export bytes; HTTP response bodies and original retrieval/package
+version metadata are unavailable when the exporter did not record them (see snapshot manifest).
 No synthetic holiday/suspension candles or price interpolation. Large raw moves are flagged, not automatically removed.
 Backward adjustment multiplies price fields by the reverse cumulative product of next-session
 previous official close / current official close. Final factor = 1. Volume is unchanged.

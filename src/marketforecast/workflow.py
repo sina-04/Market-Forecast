@@ -30,11 +30,40 @@ def prepare_run(root, config):
     write_json(output / "cleaning_audit.json", audit)
     # A discarded actual-trade record breaks the adjustment chain. Require repair rather than hiding it.
     harmless = rejected["reason"].isin(["identical_duplicate", "no_actual_trades"])
+    basis_path = snapshot / "adjustment_basis.csv"
+    # A supplied, verified full adjustment chain allows an invalid opening field
+    # to be quarantined without mistaking its omitted closing price for an action.
+    missing_open = ((rejected["open"] == 0) &
+                    rejected["reason"].eq("nonpositive_price;invalid_candle"))
+    if basis_path.exists():
+        harmless |= missing_open
     if not audit["adjustment_safe"] or (~harmless).any():
         cleaned.to_csv(output / "cleaned_unadjusted.csv", index=False)
         raise ValueError(f"Data audit requires review before adjustment: {output / 'quarantine.csv'}")
-    cleaned = adjust_prices(cleaned)
-    cleaned["session_number"] = range(len(cleaned))
+    if basis_path.exists():
+        basis = pd.read_csv(basis_path)
+        basis["date"] = pd.to_datetime(basis["date"])
+        from .data import parse_dates
+        import numpy as np
+        reference = raw.copy()
+        reference["date"] = parse_dates(reference["date"])
+        reference = reference.sort_values("date")
+        expected = adjust_prices(reference)
+        np.testing.assert_array_equal(basis["date"], expected["date"])
+        np.testing.assert_allclose(basis["adjustment_factor"], expected["adjustment_factor"], rtol=1e-12)
+        basis["session_number"] = range(len(basis))
+        cleaned = cleaned.merge(basis, on="date", validate="one_to_one")
+        from .data import PRICE_COLUMNS
+        for column in PRICE_COLUMNS:
+            cleaned[f"adj_{column}"] = cleaned[column] * cleaned["adjustment_factor"]
+        cleaned["raw_jump_flag"] = cleaned["official_close"].pct_change().abs() > 0.15
+        cleaned["adjustment_event"] = cleaned["adjustment_factor"].diff().abs() > 1e-8
+        audit["adjustment_basis"] = "Verified complete export chain, including quarantined missing-open session"
+        audit["missing_open_sessions_excluded"] = int(missing_open.sum())
+        write_json(output / "cleaning_audit.json", audit)
+    else:
+        cleaned = adjust_prices(cleaned)
+        cleaned["session_number"] = range(len(cleaned))
     cleaned.to_csv(output / "cleaned.csv", index=False)
     frame, names, feature_audit = engineer(cleaned)
     frame.to_csv(output / "features.csv", index=False)

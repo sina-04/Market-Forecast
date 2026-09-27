@@ -1,5 +1,7 @@
 .venv/
 .venv-pytse/
+.venv-*/
+exports/
 __pycache__/
 .pytest_cache/
 *.egg-info/

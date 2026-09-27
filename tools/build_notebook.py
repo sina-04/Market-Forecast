@@ -18,6 +18,7 @@ This is retrospective research: backward adjustments use later corporate actions
 Official close (`pClosing`) and last trade (`pDrCotVal`) are different fields.
 Run cells in order. A GPU is optional; CPU works. Data is frozen for five years, with a 70/15/15
 chronological split. No market performance is claimed until real data and evaluation succeed.
+For this experiment choose Runtime → Change runtime type → A100 GPU (when available).
 """),
 cell("code", """
 from pathlib import Path
@@ -29,6 +30,7 @@ if not (REPO_DIR / ".git").exists():
     subprocess.run(["git", "clone", "--branch", REPO_REF, "--single-branch", REPO_URL, str(REPO_DIR)], check=True)
 COMMIT = subprocess.check_output(["git", "-C", str(REPO_DIR), "rev-parse", "HEAD"], text=True).strip()
 print("Repository commit:", COMMIT)
+print(subprocess.run(["nvidia-smi", "--query-gpu=name,memory.total", "--format=csv"], capture_output=True, text=True).stdout if __import__('shutil').which('nvidia-smi') else "CPU runtime")
 subprocess.run([sys.executable, "-m", "pip", "install", "-q", "-r", str(REPO_DIR / "requirements-colab.txt")], check=True)
 subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--no-deps", "-e", str(REPO_DIR)], check=True)
 """),
@@ -61,8 +63,18 @@ The first capture excludes today's Tehran date. Later runs validate and reuse th
 If this cell fails, run `marketforecast collect --root artifacts/local` locally and copy the complete
 `artifacts/local/data/snapshot` directory to `ROOT/data/snapshot` in Drive. Rerun to verify checksums.
 If both routes fail, stop. Do not substitute synthetic data.
+For user pytse exports, import locally with `marketforecast import --unadjusted <CSV> --adjusted <CSV>`.
+Copy the resulting snapshot directory to Drive, or place its portable ZIP at `ROOT/foolad_snapshot_20260926.zip`.
 """),
 cell("code", """
+import zipfile
+SNAPSHOT_ZIP = ROOT / "foolad_snapshot_20260926.zip"
+if not (ROOT / "data/snapshot/manifest.json").exists() and SNAPSHOT_ZIP.exists():
+    with zipfile.ZipFile(SNAPSHOT_ZIP) as archive:
+        for name in archive.namelist():
+            if not name.startswith("data/snapshot/") or ".." in Path(name).parts:
+                raise ValueError("Unexpected snapshot archive member")
+        archive.extractall(ROOT)
 from marketforecast.data import collect
 SNAPSHOT, MANIFEST = collect(ROOT, CONFIG)
 print(MANIFEST)

@@ -46,7 +46,7 @@ def prepare(frame, feature_names, length, plan):
     scaled = x_scaler.transform(values)
     x = np.stack([scaled[t - length:t] for t in positions]).astype("float32")
     y = y_scaler.transform(labels[positions]).astype("float32")
-    dates = pd.to_datetime(frame["date"]).dt.strftime("%Y-%m-%d").to_numpy()[positions]
+    dates = pd.to_datetime(frame["date"]).dt.strftime("%Y-%m-%d").to_numpy(dtype="U10")[positions]
     previous = labels[positions - 1, 0]
     splits = {}
     for name, cut in plan.slices().items():
