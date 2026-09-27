@@ -44,6 +44,9 @@ Synthetic fixtures check behavior only; real-data deliverables require a success
   Epoch counts: 25/16 for length 10, 22/14 for length 30, 22/14 for length 60 (32/64 units);
   OHLCV ablation 29 epochs. Selection uses validation only: length 60, units 64, RMSE 324.054 rial.
 - TensorFlow 2.20 detects a GPU. Both `.keras` and `.h5` reload checks reproduce exported predictions.
+- Independent fresh-kernel reload reproduced all 134 forecasts from both saved formats and scalers.
+  Imported NumPy/Pandas/scikit-learn/TensorFlow versions: 2.1.3 / 2.2.3 / 1.6.1 / 2.20.0.
+  Device details confirm NVIDIA A100-SXM4-80GB. The final local archive passes all 64 file checksums.
 - All seven deliverables exist, including the English report and portable checksummed archive.
 
 | Model | Test MAE (adjusted rial) | Test RMSE (adjusted rial) | Test MAPE (%) |
