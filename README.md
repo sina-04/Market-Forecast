@@ -1,4 +1,4 @@
-# MarketForecast
+# Market-Forecast
 
 Reproducible internship research for **فولاد**, forecasting the next observed traded session's
 **adjusted official closing price (قیمت پایانی)** from five years of daily TSETMC data.
