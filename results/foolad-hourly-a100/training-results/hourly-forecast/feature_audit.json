@@ -1,0 +1,6 @@
+{
+  "input_rows": 4273,
+  "usable_rows": 4009,
+  "warmup_or_nonfinite_rows": 264,
+  "indicator_policy": "Restart indicators after unresolved trading dates; periods count observed bars"
+}

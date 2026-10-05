@@ -1,0 +1,9 @@
+{
+  "lstm_12_32": "model-candidates/lstm-12-bars-32-units",
+  "lstm_12_64": "model-candidates/lstm-12-bars-64-units",
+  "lstm_24_32": "model-candidates/lstm-24-bars-32-units",
+  "lstm_24_64": "model-candidates/lstm-24-bars-64-units",
+  "lstm_60_32": "model-candidates/lstm-60-bars-32-units",
+  "lstm_60_64": "model-candidates/lstm-60-bars-64-units",
+  "ohlcv": "model-candidates/ohlcv-baseline-lstm"
+}

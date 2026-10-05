@@ -1,0 +1,22 @@
+{
+  "original_root": "marketforecast_854f4c2c1679",
+  "organized_root": "results/foolad-hourly-a100",
+  "original_run_id": "854f4c2c1679",
+  "run_directory": "training-results/hourly-forecast",
+  "candidate_directories": {
+    "lstm_12_32": "model-candidates/lstm-12-bars-32-units",
+    "lstm_12_64": "model-candidates/lstm-12-bars-64-units",
+    "lstm_24_32": "model-candidates/lstm-24-bars-32-units",
+    "lstm_24_64": "model-candidates/lstm-24-bars-64-units",
+    "lstm_60_32": "model-candidates/lstm-60-bars-32-units",
+    "lstm_60_64": "model-candidates/lstm-60-bars-64-units",
+    "ohlcv": "model-candidates/ohlcv-baseline-lstm"
+  },
+  "original_model_metadata_preserved": true,
+  "path_policy": "Readable publication directories; original experiment identifiers retained in metadata and provenance",
+  "original_archive_sha256": "49ce3896a9c1008e35c8f91ab6ebc6c076c4b9b8357b77b1c85e12ce779403d1",
+  "path_mapping": {
+    "runs/854f4c2c1679/": "training-results/hourly-forecast/",
+    "candidates/": "model-candidates/"
+  }
+}

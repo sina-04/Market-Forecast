@@ -16,7 +16,8 @@ def prepare_run(root, config):
     snapshot = Path(root) / "data" / "snapshot"
     manifest = validate_snapshot(snapshot)
     if (manifest["symbol"] != config["symbol"] or manifest["years"] != config["years"]
-            or manifest["company_contains"] != config["company_contains"]):
+            or manifest["company_contains"] != config["company_contains"]
+            or manifest.get("frequency", "daily") != config.get("frequency", "daily")):
         raise ValueError("Config disagrees with frozen snapshot; use another root for a new experiment")
     source_hashes = {p.name: hashlib.sha256(p.read_text(encoding="utf-8").encode()).hexdigest()
                      for p in Path(__file__).parent.glob("*.py")}
@@ -25,45 +26,51 @@ def prepare_run(root, config):
     output = Path(root) / "runs" / fingerprint
     output.mkdir(parents=True, exist_ok=True)
     raw = pd.read_csv(snapshot / "raw.csv", dtype={"instrument_id": str})
-    cleaned, rejected, audit = clean(raw)
-    rejected.to_csv(output / "quarantine.csv", index=False)
-    write_json(output / "cleaning_audit.json", audit)
-    # A discarded actual-trade record breaks the adjustment chain. Require repair rather than hiding it.
-    harmless = rejected["reason"].isin(["identical_duplicate", "no_actual_trades"])
-    basis_path = snapshot / "adjustment_basis.csv"
-    # A supplied, verified full adjustment chain allows an invalid opening field
-    # to be quarantined without mistaking its omitted closing price for an action.
-    missing_open = ((rejected["open"] == 0) &
-                    rejected["reason"].eq("nonpositive_price;invalid_candle"))
-    if basis_path.exists():
-        harmless |= missing_open
-    if not audit["adjustment_safe"] or (~harmless).any():
-        cleaned.to_csv(output / "cleaned_unadjusted.csv", index=False)
-        raise ValueError(f"Data audit requires review before adjustment: {output / 'quarantine.csv'}")
-    if basis_path.exists():
-        basis = pd.read_csv(basis_path)
-        basis["date"] = pd.to_datetime(basis["date"])
-        from .data import parse_dates
-        import numpy as np
-        reference = raw.copy()
-        reference["date"] = parse_dates(reference["date"])
-        reference = reference.sort_values("date")
-        expected = adjust_prices(reference)
-        np.testing.assert_array_equal(basis["date"], expected["date"])
-        np.testing.assert_allclose(basis["adjustment_factor"], expected["adjustment_factor"], rtol=1e-12)
-        basis["session_number"] = range(len(basis))
-        cleaned = cleaned.merge(basis, on="date", validate="one_to_one")
-        from .data import PRICE_COLUMNS
-        for column in PRICE_COLUMNS:
-            cleaned[f"adj_{column}"] = cleaned[column] * cleaned["adjustment_factor"]
-        cleaned["raw_jump_flag"] = cleaned["official_close"].pct_change().abs() > 0.15
-        cleaned["adjustment_event"] = cleaned["adjustment_factor"].diff().abs() > 1e-8
-        audit["adjustment_basis"] = "Verified complete export chain, including quarantined missing-open session"
-        audit["missing_open_sessions_excluded"] = int(missing_open.sum())
+    if manifest.get("frequency") == "hourly":
+        from .hourly import clean_hourly
+        cleaned, rejected, audit = clean_hourly(raw, snapshot)
+        rejected.to_csv(output / "quarantine.csv", index=False)
         write_json(output / "cleaning_audit.json", audit)
     else:
-        cleaned = adjust_prices(cleaned)
-        cleaned["session_number"] = range(len(cleaned))
+        cleaned, rejected, audit = clean(raw)
+        rejected.to_csv(output / "quarantine.csv", index=False)
+        write_json(output / "cleaning_audit.json", audit)
+        # A discarded actual-trade record breaks the adjustment chain. Require repair rather than hiding it.
+        harmless = rejected["reason"].isin(["identical_duplicate", "no_actual_trades"])
+        basis_path = snapshot / "adjustment_basis.csv"
+        # A supplied, verified full adjustment chain allows an invalid opening field
+        # to be quarantined without mistaking its omitted closing price for an action.
+        missing_open = ((rejected["open"] == 0) &
+                        rejected["reason"].eq("nonpositive_price;invalid_candle"))
+        if basis_path.exists():
+            harmless |= missing_open
+        if not audit["adjustment_safe"] or (~harmless).any():
+            cleaned.to_csv(output / "cleaned_unadjusted.csv", index=False)
+            raise ValueError(f"Data audit requires review before adjustment: {output / 'quarantine.csv'}")
+        if basis_path.exists():
+            basis = pd.read_csv(basis_path)
+            basis["date"] = pd.to_datetime(basis["date"])
+            from .data import parse_dates
+            import numpy as np
+            reference = raw.copy()
+            reference["date"] = parse_dates(reference["date"])
+            reference = reference.sort_values("date")
+            expected = adjust_prices(reference)
+            np.testing.assert_array_equal(basis["date"], expected["date"])
+            np.testing.assert_allclose(basis["adjustment_factor"], expected["adjustment_factor"], rtol=1e-12)
+            basis["session_number"] = range(len(basis))
+            cleaned = cleaned.merge(basis, on="date", validate="one_to_one")
+            from .data import PRICE_COLUMNS
+            for column in PRICE_COLUMNS:
+                cleaned[f"adj_{column}"] = cleaned[column] * cleaned["adjustment_factor"]
+            cleaned["raw_jump_flag"] = cleaned["official_close"].pct_change().abs() > 0.15
+            cleaned["adjustment_event"] = cleaned["adjustment_factor"].diff().abs() > 1e-8
+            audit["adjustment_basis"] = "Verified complete export chain, including quarantined missing-open session"
+            audit["missing_open_sessions_excluded"] = int(missing_open.sum())
+            write_json(output / "cleaning_audit.json", audit)
+        else:
+            cleaned = adjust_prices(cleaned)
+            cleaned["session_number"] = range(len(cleaned))
     cleaned.to_csv(output / "cleaned.csv", index=False)
     frame, names, feature_audit = engineer(cleaned)
     frame.to_csv(output / "features.csv", index=False)
@@ -118,7 +125,7 @@ def verify_run(output):
     np.testing.assert_allclose(test["actual"], exported["actual"], rtol=1e-10)
     for filename in ["model.keras", "model.h5"]:
         model = tf.keras.models.load_model(output / filename, compile=False)
-        predicted = predict_original(model, x, scalers["target"])
+        predicted = predict_original(model, x, scalers["target"], test["persistence"], metadata.get("target_mode", "price"))
         np.testing.assert_allclose(predicted, exported["lstm"], rtol=1e-6, atol=1e-3)
     return {"verified": True, "predictions": len(exported)}
 

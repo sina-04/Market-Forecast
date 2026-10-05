@@ -1,0 +1,25 @@
+{
+  "raw_rows": 4273,
+  "clean_rows": 4273,
+  "quarantined_rows": 0,
+  "reason_counts": {},
+  "adjustment_safe": true,
+  "adjustment_basis": "Verified complete daily official-close chain applied once per session",
+  "unresolved_dates": 15,
+  "segments": 8,
+  "observed_hours": [
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "late_hour_bars": 236,
+  "late_hour_policy": "Preserved as returned; no unverified session-hour filtering"
+}

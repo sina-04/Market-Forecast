@@ -8,7 +8,13 @@ __pycache__/
 .ipynb_checkpoints/
 data/
 artifacts/
+!artifacts/
+artifacts/*
+!artifacts/foolad-hourly-a100-results.zip.sha256
 runs/
 .firecrawl/
 *.zip
+!artifacts/foolad-hourly-a100-results.zip
+!results/foolad-hourly-a100/data/
+!results/foolad-hourly-a100/data/**
 

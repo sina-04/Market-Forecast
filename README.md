@@ -1,9 +1,41 @@
-# MarketForecast
+# Market-Forecast
 
-Reproducible internship research for **فولاد**, forecasting the next observed traded session's
-**adjusted official closing price (قیمت پایانی)** from five years of daily TSETMC data.
+Reproducible internship research for **فولاد**. The current hourly experiment forecasts the next observed
+traded bar's **adjusted last traded price**; the preserved daily experiment forecasts official closing price.
 
-[Open in Colab](https://colab.research.google.com/github/sina-04/MarketForecast/blob/main/notebooks/marketforecast_colab.ipynb)
+## Hourly experiment
+
+The [completed hourly A100 results](results/foolad-hourly-a100/README.md) contain the verified downloaded
+snapshot, trained models, predictions, candidate histories, reports and charts in descriptive folders.
+On 535 test targets, the validation-selected full-feature LSTM has RMSE 33.049 adjusted rials versus
+persistence 32.793. The OHLCV comparison has RMSE 32.143; persistence retains the lowest MAE/MAPE.
+
+The October 5, 2026 export contains 4,273 bars from October 2, 2021 through September 30, 2026,
+covering 1,025 trading dates; 15 source dates are unresolved. The importer verifies every exported bar
+against the cached returned trades and freezes the hourly CSV, daily adjustment basis, coverage and hashes.
+Daily corporate-action factors apply uniformly within each session. Indicators restart after known missing
+dates, and sequences crossing those dates are excluded. Overnight/weekend gaps remain observed-bar gaps.
+
+```powershell
+./.venv-research/Scripts/python.exe -m marketforecast.cli import-hourly --config configs/hourly.json --root artifacts/foolad_hourly_20261005 --hourly exports/foolad_hourly/foolad_hourly.csv --daily exports/foolad_hourly/daily_unadjusted.csv --coverage exports/foolad_hourly/coverage.csv --export-script export_foolad_hourly.py --trades exports/foolad_hourly/returned_trades
+./.venv-research/Scripts/python.exe -m marketforecast.cli prepare --config configs/hourly.json --root artifacts/foolad_hourly_20261005
+./.venv-research/Scripts/python.exe tools/build_hourly_colab.py
+```
+
+Open `notebooks/marketforecast_hourly_colab.ipynb` in Colab, select A100 GPU, run the training cell and
+upload `artifacts/foolad_hourly_20261005/colab/foolad_hourly_training_input.zip`. The ZIP uses the exact
+local source files, including current changes, instead of fetching an older daily pipeline from GitHub.
+The notebook verifies checksums, runs tests, trains, verifies saved models and downloads the results ZIP.
+Download outputs before disconnecting; this notebook uses temporary runtime storage.
+
+Hourly inputs use relative prices, normalized indicators, log/relative volume and hour/calendar features.
+The LSTM learns next-bar log return and reconstructs adjusted price using the prior observed bar.
+Validation selects among 12/24/60-bar contexts × 32/64 units. Persistence, Ridge and OHLCV use common
+chronological target timestamps with training-only scalers. `configs/hourly.json` enforces an A100.
+More hourly bars do not guarantee lower errors, and hourly-last-price versus daily-official-close errors
+measure different targets/horizons. Conclusions use the held-out hourly baseline comparison.
+
+[Open in Colab](https://colab.research.google.com/github/sina-04/Market-Forecast/blob/main/notebooks/marketforecast_colab.ipynb)
 
 ## Completed Foolad experiment
 

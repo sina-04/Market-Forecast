@@ -23,7 +23,7 @@ For this experiment choose Runtime → Change runtime type → A100 GPU (when av
 cell("code", """
 from pathlib import Path
 import subprocess, sys
-REPO_URL = "https://github.com/sina-04/MarketForecast.git"
+REPO_URL = "https://github.com/sina-04/Market-Forecast.git"
 REPO_REF = "main"
 REPO_DIR = Path("/content/MarketForecast")
 if not (REPO_DIR / ".git").exists():

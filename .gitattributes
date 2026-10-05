@@ -2,3 +2,6 @@
 results/foolad_20260926/** -text whitespace=cr-at-eol
 # Matplotlib-generated SVG paths contain intentional spaces before line endings.
 results/foolad_20260926/run/*.svg -whitespace
+results/foolad-hourly-a100/** -text whitespace=cr-at-eol,-blank-at-eof
+results/foolad-hourly-a100/**/*.svg -whitespace
+artifacts/foolad-hourly-a100-results.zip.sha256 -text whitespace=cr-at-eol
